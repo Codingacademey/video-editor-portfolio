@@ -1,24 +1,44 @@
-import { useEffect, useRef } from 'react';
-import { useAnimation } from 'framer-motion';
+import { useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
+import { useAnimation, AnimationControls } from 'framer-motion';
 
-export function useScrollReveal(threshold = 0.1) {
+type ScrollRevealOptions = {
+  threshold?: number;
+  triggerOnce?: boolean;
+  delay?: number;
+  rootMargin?: string;
+  duration?: number;
+};
+
+export function useScrollReveal(threshold = 0.1, options?: ScrollRevealOptions) {
   const controls = useAnimation();
-  const [ref, inView] = useInView({ threshold, triggerOnce: true });
+  
+  const { 
+    triggerOnce = true, 
+    delay = 0.2, 
+    rootMargin = "0px",
+    duration = 0.6
+  } = options || {};
+  
+  const [ref, inView] = useInView({
+    threshold,
+    triggerOnce,
+    rootMargin
+  });
   
   useEffect(() => {
     if (inView) {
       controls.start({
         opacity: 1,
         y: 0,
-        x: 0,
         transition: {
-          duration: 0.8,
-          ease: 'easeOut'
+          duration,
+          delay,
+          ease: "easeOut"
         }
       });
     }
-  }, [controls, inView]);
+  }, [controls, inView, delay, duration]);
   
   return { ref, controls, inView };
 }
