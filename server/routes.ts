@@ -1,9 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import express from "express";
+import path from "path";
 import { storage } from "./storage";
 import { insertContactMessageSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Serve videos from the public directory
+  app.use('/videos', express.static(path.join(process.cwd(), 'public/videos')));
+
   // API route for handling contact form submissions
   app.post("/api/contact", async (req, res) => {
     try {
